@@ -31,7 +31,7 @@ func InitTaskHandler() {
 	taskService = task.NewService(tr)
 }
 
-func fetchAllTasksHandler(c *gin.Context) {
+func FetchAllTasksHandler(c *gin.Context) {
 	tasks, err := taskService.FetchAll(c.Request.Context())
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, ResponseError{Message: err.Error()})
@@ -44,7 +44,7 @@ func fetchAllTasksHandler(c *gin.Context) {
 	})
 }
 
-func getTaskHandler(c *gin.Context) {
+func GetTaskHandler(c *gin.Context) {
 	id := c.Param("id")
 	t, err := taskService.GetByID(c, id)
 	// TODO: improve validation
@@ -62,7 +62,7 @@ func getTaskHandler(c *gin.Context) {
 	})
 }
 
-func createTaskHandler(c *gin.Context) {
+func CreateTaskHandler(c *gin.Context) {
 	var t domain.Task
 	var err error
 	if err = c.ShouldBindJSON(&t); err != nil {
@@ -91,7 +91,7 @@ func createTaskHandler(c *gin.Context) {
 	})
 }
 
-func putTaskHandler(c *gin.Context) {
+func PutTaskHandler(c *gin.Context) {
 	id := c.Param("id")
 	existedTask, err := taskService.GetByID(c, id)
 	// TODO: improve validation
@@ -121,7 +121,7 @@ func putTaskHandler(c *gin.Context) {
 	})
 }
 
-func deleteTaskHandler(c *gin.Context) {
+func DeleteTaskHandler(c *gin.Context) {
 	id := c.Param("id")
 	existedTask, err := taskService.GetByID(c, id)
 	// TODO: improve validation

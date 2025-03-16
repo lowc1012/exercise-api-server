@@ -20,8 +20,15 @@ func StartAsync() (*http.Server, error) {
 		AllowMethods:    []string{"GET", "POST", "PUT", "DELETE"},
 	}))
 
-	v1Group := router.Group("/v1")
-	v1.MountRoute(v1Group)
+	router.GET("/healthz", v1.HealthHandler)
+
+	// tasks
+	v1.InitTaskHandler()
+	router.GET("/tasks", v1.FetchAllTasksHandler)
+	router.GET("/tasks/:id", v1.GetTaskHandler)
+	router.POST("/tasks", v1.CreateTaskHandler)
+	router.PUT("/tasks/:id", v1.PutTaskHandler)
+	router.DELETE("/tasks/:id", v1.DeleteTaskHandler)
 
 	// TODO: make more configurable
 	srv := &http.Server{

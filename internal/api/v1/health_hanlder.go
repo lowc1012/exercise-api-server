@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func healthHandler(c *gin.Context) {
+func HealthHandler(c *gin.Context) {
 	type resp struct {
 		Status string `json:"status"`
 	}
