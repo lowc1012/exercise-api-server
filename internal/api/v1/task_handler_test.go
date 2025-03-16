@@ -156,7 +156,7 @@ func TestPutTaskHandler(t *testing.T) {
 	mock.tasks["1"] = domain.Task{ID: "1", Name: "Original Task"}
 
 	t.Run("update existing task", func(t *testing.T) {
-		task := domain.Task{Name: "Updated Task"}
+		task := domain.Task{ID: "1", Name: "Updated Task", Status: 1}
 		body, _ := json.Marshal(task)
 
 		w := httptest.NewRecorder()
@@ -165,10 +165,12 @@ func TestPutTaskHandler(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
+		updatedTask, _ := mock.GetByID(context.Background(), "1")
+		assert.Equal(t, "Updated Task", updatedTask.Name)
 	})
 
 	t.Run("update non-existent task", func(t *testing.T) {
-		task := domain.Task{Name: "New Task"}
+		task := domain.Task{ID: "999", Name: "New Task", Status: 1}
 		body, _ := json.Marshal(task)
 
 		w := httptest.NewRecorder()
