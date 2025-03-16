@@ -32,5 +32,3 @@ func (t *Task) String() string {
 	builder.WriteByte(')')
 	return builder.String()
 }
-
-type Tasks []*Task
