@@ -23,6 +23,7 @@ func StartAsync() (*http.Server, error) {
 	v1Group := router.Group("/v1")
 	v1.MountRoute(v1Group)
 
+	// TODO: make more configurable
 	srv := &http.Server{
 		Addr:              ":8080",
 		Handler:           router,

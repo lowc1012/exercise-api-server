@@ -20,6 +20,8 @@ var rootCmd = &cobra.Command{
 }
 
 func appRun(cmd *cobra.Command, args []string) error {
+	// TODO: init default configuration, DB, etc...
+
 	log.Println("Starting API server")
 	srv, err := api.StartAsync()
 	if err != nil {

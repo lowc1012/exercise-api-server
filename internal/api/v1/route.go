@@ -6,7 +6,9 @@ func MountRoute(r *gin.RouterGroup) {
 	r.GET("/healthz", healthHandler)
 
 	// tasks
-	r.GET("/tasks", getTasksHandler)
+	InitTaskHandler()
+	r.GET("/tasks", fetchAllTasksHandler)
+	r.GET("/tasks/:id", getTaskHandler)
 	r.POST("/tasks", createTaskHandler)
 	r.PUT("/tasks/:id", putTaskHandler)
 	r.DELETE("/tasks/:id", deleteTaskHandler)
