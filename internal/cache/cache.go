@@ -12,7 +12,7 @@ type Cache[T any] struct {
 
 type Item[T any] struct {
 	Value     T
-	ExpiresAt int64
+	ExpiresAt time.Time
 }
 
 func NewCache[T any]() *Cache[T] {
@@ -26,11 +26,11 @@ func (c *Cache[T]) FetchAll() []T {
 	var result []T
 	c.store.Range(func(k, v any) bool {
 		if item, ok := v.(Item[T]); ok {
-			// Check if the item has expired
-			if time.Now().Unix() <= item.ExpiresAt {
-				result = append(result, item.Value)
-			} else {
+			// Match the expiration logic from Get method
+			if time.Now().After(item.ExpiresAt) {
 				c.store.Delete(k)
+			} else {
+				result = append(result, item.Value)
 			}
 		}
 		return true
@@ -48,8 +48,8 @@ func (c *Cache[T]) Get(key string) (T, bool) {
 
 	item := data.(Item[T])
 	// Check if expired
-	if time.Now().Unix() > item.ExpiresAt {
-		c.store.Delete(key) // Remove expired item
+	if time.Now().After(item.ExpiresAt) {
+		c.store.Delete(key)
 		return t, false
 	}
 
@@ -58,7 +58,7 @@ func (c *Cache[T]) Get(key string) (T, bool) {
 
 // Set stores an item in cache with TTL
 func (c *Cache[T]) Set(key string, value T, ttl time.Duration) {
-	expiration := time.Now().Add(ttl).Unix()
+	expiration := time.Now().Add(ttl)
 	c.store.Store(key, Item[T]{Value: value, ExpiresAt: expiration})
 }
 
