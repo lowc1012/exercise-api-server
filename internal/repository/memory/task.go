@@ -65,12 +65,18 @@ func (t *TaskRepository) GetByID(ctx context.Context, id string) (domain.Task, e
 	return domain.Task{}, nil
 }
 
-func (t *TaskRepository) Store(ctx context.Context, task domain.Task) error {
+func (t *TaskRepository) Store(ctx context.Context, task domain.Task) (domain.Task, error) {
 	id := strconv.Itoa(t.ai.ID())
 	key := generateKey(id)
 	task.ID = id
+	if task.CreatedAt.IsZero() {
+		task.CreatedAt = time.Now()
+	}
+	if task.UpdatedAt.IsZero() {
+		task.UpdatedAt = time.Now()
+	}
 	t.Cache.Set(key, task, defaultTTL)
-	return nil
+	return task, nil
 }
 
 func (t *TaskRepository) Update(ctx context.Context, task domain.Task) error {

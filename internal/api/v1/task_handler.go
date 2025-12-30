@@ -19,7 +19,7 @@ type TaskService interface {
 	FetchAll(ctx context.Context) ([]domain.Task, error)
 	GetByID(ctx context.Context, id string) (domain.Task, error)
 	Update(ctx context.Context, t domain.Task) error
-	Store(ctx context.Context, t domain.Task) error
+	Store(ctx context.Context, t domain.Task) (domain.Task, error)
 	Delete(ctx context.Context, id string) error
 }
 
@@ -79,13 +79,14 @@ func CreateTaskHandler(c *gin.Context) {
 		t.Status = 0
 	}
 
-	if err := taskService.Store(c.Request.Context(), t); err != nil {
+	createdTask, err := taskService.Store(c.Request.Context(), t)
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, ResponseError{Message: "failed to create task"})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"task":    t,
+		"task":    createdTask,
 		"status":  "success",
 		"message": "task created successfully",
 	})
@@ -108,10 +109,11 @@ func PutTaskHandler(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, ResponseError{Message: "invalid request body"})
 		return
 	}
-	existedTask = t
-	err = taskService.Update(c, existedTask)
+	// 使用 path 中的 ID
+	t.ID = id
+	err = taskService.Update(c, t)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, ResponseError{Message: "failed to create task"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, ResponseError{Message: "failed to update task"})
 		return
 	}
 

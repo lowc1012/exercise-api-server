@@ -10,7 +10,7 @@ import (
 type TaskRepository interface {
 	FetchAll(ctx context.Context) ([]domain.Task, error)
 	GetByID(ctx context.Context, id string) (domain.Task, error)
-	Store(ctx context.Context, t domain.Task) error
+	Store(ctx context.Context, t domain.Task) (domain.Task, error)
 	Update(ctx context.Context, t domain.Task) error
 	Delete(ctx context.Context, id string) error
 }
@@ -43,7 +43,7 @@ func (s *Service) Update(ctx context.Context, t domain.Task) error {
 	return s.taskRepo.Update(ctx, t)
 }
 
-func (s *Service) Store(ctx context.Context, task domain.Task) error {
+func (s *Service) Store(ctx context.Context, task domain.Task) (domain.Task, error) {
 	task.CreatedAt = time.Now()
 	task.UpdatedAt = time.Now()
 	return s.taskRepo.Store(ctx, task)
