@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: Exercise API Server
+  description: 簡單的 Task 管理 REST API 服務
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:8080
+    description: 本地開發伺服器
+
+paths:
+  /healthz:
+    get:
+      summary: 健康檢查
+      tags:
+        - Health
+      responses:
+        '200':
+          description: 服務正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /tasks:
+    get:
+      summary: 取得所有任務
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: 成功取得任務列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  status:
+                    type: string
+                    example: "success"
+    
+    post:
+      summary: 創建新任務
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: "完成專案"
+                status:
+                  type: integer
+                  enum: [0, 1]
+                  example: 0
+                  description: "0 = 未完成, 1 = 已完成"
+      responses:
+        '201':
+          description: 任務創建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "task created successfully"
+        '400':
+          description: 請求格式錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tasks/{id}:
+    get:
+      summary: 取得特定任務
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1"
+      responses:
+        '200':
+          description: 成功取得任務
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+                  status:
+                    type: string
+                    example: "success"
+        '404':
+          description: 任務不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      summary: 更新任務
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "完成專案"
+                status:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+                  description: "0 = 未完成, 1 = 已完成"
+      responses:
+        '200':
+          description: 任務更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+                  status:
+                    type: string
+                    example: "success"
+        '404':
+          description: 任務不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: 刪除任務
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1"
+      responses:
+        '200':
+          description: 任務刪除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+        '404':
+          description: 任務不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        name:
+          type: string
+          example: "完成專案"
+        status:
+          type: integer
+          enum: [0, 1]
+          example: 0
+          description: "0 = 未完成, 1 = 已完成"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+    
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "錯誤訊息"
