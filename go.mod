@@ -1,6 +1,6 @@
 module github.com/lowc1012/exercise-api-server
 
-go 1.22.3
+go 1.24
 
 require (
 	github.com/gin-contrib/cors v1.7.3
